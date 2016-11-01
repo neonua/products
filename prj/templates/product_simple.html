@@ -1,0 +1,102 @@
+{% extends "base.html" %}
+{% load poll_extras %}
+{% load static from staticfiles %}
+{% block meta_title %}Product detail{% endblock meta_title %}
+{% block title %}Product detail{% endblock title %}
+
+
+{% block content %}
+
+<!-- Start LS -->
+ <script type="text/javascript">
+$( document ).ready(function() {
+    $("#like_btn").on('click', function () {
+        $.ajax({
+            url: '/products/like/{{ product.slug }}/',
+            type: "POST",
+            dataType: 'json',
+            data: {csrfmiddlewaretoken: '{{ csrf_token }}'},
+            success: function (json) {
+                $('#like').html('<p id="liked">Like:'+json.like_prod+'</p>');
+            },
+
+        });
+    });
+});
+ </script>
+<!-- End JS -->
+
+<!-- Start Product block detail-->
+<hr>
+<h4>Product name : {{ product.name }}</h4>
+<p>Price : {{ product.price }}</p>
+<p>Description: {{ product.description }}</p>
+    <br>
+    {% if user.is_authenticated and not user_likes_this %}
+        <p id="like"><button id="like_btn">Please, like me: {{ like }}</button></p>
+    {% else %}
+    <p id="liked">Like: {{ like }}</p>
+    {% endif %}
+<!-- End Product block detail-->
+
+<!-- Start Comment add block with form-->
+    <hr>
+
+    <h3>Add comment:</h3>
+
+        <form method="POST" class="post-form" action="/products/{{ product.slug }}/">
+
+                {% csrf_token %}
+                <div class="form-group">
+                    <div class="fieldWrapper">
+                    <label for="id_subject">{{ form.name.label_tag }}</label>
+
+                        {% if form.name.errors %}
+                            <ul class="messages">
+                                {% for error in form.name.errors %}
+                                    <li class="alert alert-danger">
+                                    {{ error }}
+                                    </li>
+                                {% endfor %}
+                            </ul>
+                        {% endif %}
+
+                    {{ form.name }}
+                    </div>
+                </div>
+                <div class="form-group">
+                  <div class="fieldWrapper">
+                    <label for="id_subject">{{ form.body.label_tag }}</label>
+                        {% if form.body.errors %}
+                            <ul class="messages">
+                                {% for error in form.body.errors %}
+                                    <li class="alert alert-danger">
+                                    {{ error }}
+                                    </li>
+                                {% endfor %}
+                            </ul>
+                        {% endif %}
+                    {{ form.body }}
+                </div>
+                </div>
+
+            <button type="submit" class="save btn btn-default">Add comment</button>
+
+        </form>
+<hr>
+<!-- End Comment add block-->
+
+<!-- Start Comments block-->
+
+    <h3>Comments:</h3>
+
+    {% for com in comment %}
+    <p><b>name:</b> {{ com.name }} | <b>date:</b> {{ com.created_at }}</p>
+    <p>{{ com.body }}</p>
+    <br>
+    {% endfor %}
+
+<!-- End Comments block-->
+
+{% endblock content %}
+

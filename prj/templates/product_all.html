@@ -1,0 +1,60 @@
+{% extends "base.html" %}
+{% load poll_extras %}
+{% load static from staticfiles %}
+{% block meta_title %}Products{% endblock meta_title %}
+{% block title %}Products{% endblock title %}
+
+
+{% block content %}
+
+    {% if products %}
+<!-- Start Products list-->
+
+<table class="table table-hover table-striped">
+
+        {% with order_by=request.GET.order_by reverse=request.GET.reverse %}
+            <thead>
+            <tr>
+
+                <th>Product</th>
+                <th>Price</th>
+                <th>Description</th>
+                <th><a href="?order_by=like{% if order_by == 'like' and reverse != '1' %}&amp;reverse=1{% endif %}&amp;page={{ products.number }}">Like{% if order_by == 'like' and reverse != '1' %} &uarr;{% elif order_by == 'like' and reverse == '1' %} &darr;{% endif %}</a></th>
+
+            </tr>
+            </thead>
+        {% endwith %}
+
+            <tbody>
+            {% for prod in products %}
+            <tr>
+                <td><a href="{{ prod.slug }}">{{ prod.name }}</a></td>
+                <td>{{ prod.price }}</td>
+                <td>{{ prod.description }}</td>
+                <td>{{ prod.dcount }}</td>
+            </tr>
+
+            {% endfor %}
+            </tbody>
+        </table>
+
+<hr>
+<!-- End Products list-->
+
+<!-- Start Paginator block-->
+{% if products.has_other_pages %}
+    <nav>
+        <ul class="pagination">
+            <li><a href="?{% url_replace request 'page' 1 %}">&laquo;</a></li>
+            {% for p in products.paginator.page_range %}
+                <li {% if products.number == p %}class="active"{% endif %}><a href="?{% url_replace request 'page' p %}">{{ p }}</a> </li>
+            {% endfor %}
+            <li> <a href="?{% url_replace request 'page' products.paginator.num_pages %}"> &raquo;</a> </li>
+        </ul>
+    </nav>
+{% endif %}
+<!-- End Paginator block-->
+    {% else %}
+        <h2>Please add products</h2>
+    {% endif %}
+{% endblock content %}
