@@ -10,7 +10,7 @@ When you try start project or use manage.py - add to end parameter '--settings' 
 Example for dev:
   --settings=prj.settings.dev 
 
-########Deploy########
+
 0) You can install components or use virtuarlenv.
 1) Install components:
   
@@ -27,21 +27,19 @@ if permission denied - use superuser(root) permissions:
 
 3) Migrate
   
-  cd prj
-  python2.7 manage.py --settings=prj.settings.dev  migrate
+  cd prj/ && python2.7 manage.py --settings=prj.settings.dev  migrate
 
 4) Create superuser
   
-  cd prj
   python2.7 manage.py --settings=prj.settings.dev  createsuperuser
   
 5) Use fixtures
 
-  cd prj && python2.7 manage.py --settings=prj.settings.dev loaddata --app=prj full_data.json
+  python2.7 manage.py --settings=prj.settings.dev loaddata --app=prj full_data.json
   
 6) And Start project
 
-  cd prj && python2.7 manage.py --settings=prj.settings.dev runserver
+  python2.7 manage.py --settings=prj.settings.dev runserver
   
 7) Tests:
 
