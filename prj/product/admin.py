@@ -26,11 +26,15 @@ class ProductAdmin(admin.ModelAdmin):
     Set display fields in admin-panel.
     Set view on site
     """
-    exclude = ['slug']
+    # exclude = ['slug']
     inlines = (ProductInline,)
 
-    def view_on_site(self, obj):
-        return PORTAL_URL + reverse('product_simple', kwargs={'slug': obj.slug})
+    view_on_site = True  # True is default
+
+    # def view_on_site(self, obj):
+    #     url = reverse('product_simple', kwargs={'slug': obj.slug})
+    #
+    #     return PORTAL_URL + url
 
 
 class CommentAdmin(admin.ModelAdmin):
@@ -42,3 +46,4 @@ class CommentAdmin(admin.ModelAdmin):
 
 admin.site.register(Product, ProductAdmin)
 admin.site.register(Comment, CommentAdmin)
+admin.site.register(Like)

@@ -4,7 +4,10 @@ from django.db import models
 from django.template.defaultfilters import slugify
 from django.db import IntegrityError, transaction
 from django.contrib.auth.models import User
-import datetime
+from django.utils import timezone
+
+from django.core.urlresolvers import reverse
+
 # Create your models here.
 
 
@@ -18,7 +21,8 @@ class Product(models.Model):
 
     slug = models.SlugField(
         max_length=64,
-        unique=True
+        unique=True,
+        primary_key=True
     )
 
     description = models.TextField(
@@ -30,36 +34,36 @@ class Product(models.Model):
     )
 
     created_at = models.DateTimeField(
-        default=datetime.datetime.now,
+        auto_now_add=True,
         editable=False,
-        null=True
+        null=True,
     )
 
     modified_at = models.DateTimeField(
-        default=datetime.datetime.now,
+        auto_now=True,
         blank=True,
-        null=True
+        null=True,
+
     )
 
     def __unicode__(self):
         return '{0}'.format(self.name)
+
+    def get_absolute_url(self):
+        return reverse('product_simple', kwargs={'slug': self.slug})
 
     class Meta(object):
         verbose_name = u'Product'
         verbose_name_plural = u'Products'
 
     def save(self, *args, **kwargs):
-        self.slug = slugify(self.name)
-        try:
-            with transaction.atomic():
-                super(Product, self).save(*args, **kwargs)
-        except IntegrityError:
-            self.slug = slugify(str(Product.objects.latest('id').id) + ' ' + self.name)
-
-        if self.id:
-            self.modified_at = datetime.datetime.now()
-        else:
-            self.created_at = datetime.datetime.now()
+        if not self.pk:
+            self.slug = slugify(self.name)
+            try:
+                with transaction.atomic():
+                    super(Product, self).save(*args, **kwargs)
+            except IntegrityError:
+                self.slug = slugify(str(Product.objects.latest('id').id) + ' ' + self.name)
         super(Product, self).save(*args, **kwargs)
 
 
@@ -80,7 +84,7 @@ class Comment(models.Model):
     )
 
     created_at = models.DateTimeField(
-        default=datetime.datetime.now,
+        auto_now=True,
         editable=False
     )
 
@@ -96,7 +100,7 @@ class Like(models.Model):
     """Like model"""
     user = models.ForeignKey(User)
     product = models.ForeignKey(Product, default='')
-    created = models.DateTimeField(auto_now_add=True)
+    created = models.DateTimeField(auto_now=True)
 
     def __unicode__(self):
         return '{0} liked'.format(self.user)

@@ -1,5 +1,5 @@
 # -*- coding: utf-8 -*-
-from django.shortcuts import render, redirect, HttpResponse, get_object_or_404, get_list_or_404
+from django.shortcuts import render, redirect, HttpResponse, get_object_or_404
 from .models import Product, Comment, Like
 from django.core.paginator import Paginator, EmptyPage, PageNotAnInteger
 from datetime import timedelta
@@ -64,7 +64,9 @@ def product_simple(request, slug):
 
     # like
     like = Like.objects.filter(product__slug=slug).count()  # get numbers of like current page
-    user_likes_this = product.like_set.filter(user=request.user)  # liked or not from auth-user
+    user_likes_this = None
+    if request.user.is_authenticated():
+        user_likes_this = product.like_set.filter(user=request.user)  # liked or not from auth-user
 
     # Post comments
     if request.method == "POST":
@@ -98,8 +100,9 @@ def like(request, slug):
     """
     user = request.user  # current user
     ajax = {}
+
     if user.is_authenticated() and request.is_ajax():
-        like, create = Like.objects.get_or_create(user=user, product=Product.objects.get(slug=slug))
+        like, create = Like.objects.get_or_create(user=user, product_id=slug)
         if create:
             like_prod = Like.objects.filter(product__slug=slug).count()  # return numbers of likes
             ajax['like_prod'] = like_prod
