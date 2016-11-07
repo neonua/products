@@ -26,7 +26,7 @@ class ProductAdmin(admin.ModelAdmin):
     Set display fields in admin-panel.
     Set view on site
     """
-    # exclude = ['slug']
+    exclude = ['slug']
     inlines = (ProductInline,)
 
     view_on_site = True  # True is default
