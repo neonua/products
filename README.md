@@ -25,21 +25,24 @@ if permission denied - use superuser(root) permissions:
 
 2) Connect your DB in settings/base.py
 
-3) Makemigrations and migrate
+3) Migrate
   
-  cd prj/
-  python2.7 manage.py --settings=prj.settings.dev  makemigraions
+  cd prj
   python2.7 manage.py --settings=prj.settings.dev  migrate
 
 4) Create superuser
   
-  cd prj/
+  cd prj
   python2.7 manage.py --settings=prj.settings.dev  createsuperuser
   
 5) Use fixtures
 
-  cd prj && python2.7 manage.py --settings=prj.settings.dev loaddata --app=prj fixture.json
+  cd prj && python2.7 manage.py --settings=prj.settings.dev loaddata --app=prj full_data.json
   
 6) And Start project
 
   cd prj && python2.7 manage.py --settings=prj.settings.dev runserver
+  
+7) Tests:
+
+  python2.7 manage.py test --settings=prj.settings.dev
